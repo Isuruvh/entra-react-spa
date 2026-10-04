@@ -1,70 +1,64 @@
-# Getting Started with Create React App
+# React SPA - Microsoft Entra External ID sign-in sample
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A small React single-page application (SPA) for trying the Microsoft Entra External ID sign-in flow. It uses the Microsoft Authentication Library for React (MSAL React) and the MSAL browser library.
 
-## Available Scripts
+After signing in, the app displays claims from the user's ID token. The sample uses redirect-based authentication and includes sign-in, sign-up, and sign-out controls.
 
-In the project directory, you can run:
+## Requirements
 
-### `npm start`
+- Node.js and npm
+- A Microsoft Entra External ID tenant
+- An app registration in that tenant configured as a single-page application
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Configure the app registration
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+In your Entra External ID tenant, register a SPA and add the URL where you will run the app as a **Single-page application** redirect URI. For local development, use:
 
-### `npm test`
+```text
+http://localhost:3000
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Add the redirect URI for each environment where you plan to run the app. A client secret is not needed for a browser-based SPA.
 
-### `npm run build`
+## Configure this sample
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Update the MSAL settings in [`src/authConfig.js`](./src/authConfig.js) to match your app registration and tenant:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- `clientId`: the Application (client) ID of your app registration.
+- `authority`: your External ID tenant's sign-in authority.
+- `knownAuthorities`: the host name for that authority.
+- `loginRequest.scopes`: the scopes to request, if you add API access. The sample currently relies on MSAL's default OpenID Connect scopes.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The current file contains sample tenant values. Replace them with the values for your own tenant before using this sample with another registration.
 
-### `npm run eject`
+## Run locally
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Install dependencies and start the development server:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm install
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Open [http://localhost:3000](http://localhost:3000). Choose **Sign up** to start the sign-up redirect flow. After returning to the app, the ID-token claims are shown. The navigation bar also provides sign-in and sign-out controls.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Available scripts
 
-## Learn More
+| Command | Description |
+| --- | --- |
+| `npm start` | Start the local development server. |
+| `npm test` | Run the tests in interactive watch mode. |
+| `npm run build` | Create an optimized production build in the `build` directory. |
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Project structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- `src/authConfig.js` — MSAL authority, app registration, and login scopes.
+- `src/index.js` — Creates the MSAL `PublicClientApplication` and mounts the React app.
+- `src/App.js` — Provides the MSAL context and renders sign-in/sign-up or authenticated content.
+- `src/components/` — Navigation, page layout, and ID-token claim display.
 
-### Code Splitting
+## Troubleshooting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- If sign-in fails or returns to an error page, check that the tenant authority and `knownAuthorities` match your External ID tenant.
+- Confirm the app registration includes the exact redirect URI, including scheme, host, port, and path.
+- If you change the local port or use a deployed URL, register that URL as a SPA redirect URI and use it to open the app.
